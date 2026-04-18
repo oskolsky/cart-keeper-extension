@@ -61,7 +61,7 @@ export const SavedProductsList = ({ items, onRemove }: SavedProductsListProps) =
     const groups = groupItemsByMarketplace(items)
 
     return (
-        <div className="max-h-112.5 overflow-y-auto px-5">
+        <div className="min-h-0 flex-1 overflow-y-auto px-5">
             {groups.map(group => (
                 <section key={`${group.marketplaceName}:${group.marketplaceUrl}`}>
                     <MarketplaceGroupHeader group={group} />

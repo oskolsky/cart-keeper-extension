@@ -12,6 +12,7 @@ export default function App() {
     const [items, setItems] = useState<SavedProduct[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [currentProduct, setCurrentProduct] = useState<Product | null>(null)
+
     const isCurrentProductSaved = currentProduct ? items.some(item => item.url === currentProduct.url) : false
 
     useEffect(() => {
@@ -44,20 +45,20 @@ export default function App() {
     }
 
     return (
-        <div className="w-94.5 bg-white text-gray-900">
+        <div className="flex max-h-145 w-94.5 flex-col overflow-hidden bg-white text-gray-900">
             <Header count={items.length} />
 
             {isLoading ? (
                 <Loader />
             ) : (
-                <div>
+                <div className="flex min-h-0 flex-1 flex-col">
                     {currentProduct ? (
                         <SaveProductButton
                             label={isCurrentProductSaved ? 'Update product' : 'Save product'}
                             onClick={handleSaveProduct}
                         />
                     ) : (
-                        <div className="h-5" />
+                        <div className="h-5">&nbsp;</div>
                     )}
                     <SavedProductsList items={items} onRemove={handleRemoveProduct} />
                 </div>
