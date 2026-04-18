@@ -4,7 +4,7 @@
 
 ## Overview
 
-Cart Keeper is a browser extension that allows users to save and manage products from integrated online stores. The current integrated store is Trodo.com.
+Cart Keeper is a browser extension that allows users to save and manage products from online stores that expose product data or have a supported store-specific integration.
 
 ## Data Collection
 
@@ -16,14 +16,14 @@ All data is stored locally in the user's browser using Chrome's built-in storage
 
 The extension stores the following information locally:
 
-- Product ID
 - Product name
 - Product image URL
 - Product price
 - Product URL
 - Store or marketplace name
+- Store or marketplace URL
 - Currency
-- Discount information (if available)
+- Last save date
 
 This data is used solely to provide the functionality of the extension.
 
@@ -36,8 +36,8 @@ We do not share, sell, or transmit any user data to third parties.
 The extension may request the following permissions:
 
 - **storage** — to store saved products locally
-- **activeTab** — to access the current integrated store page
-- **host permissions (trodo.com)** — to read product information from Trodo pages while Trodo.com is the only integrated store
+- **activeTab** — to access the current store page
+- **host permissions (http/https pages)** — to read schema.org product information from store pages and supported store-specific pages
 
 These permissions are used only for the core functionality of the extension.
 

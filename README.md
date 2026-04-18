@@ -6,11 +6,11 @@ A Chrome extension that lets you save products from integrated stores into one l
 
 ## Features
 
-- Save products directly from integrated product pages
-- Currently integrated store: Trodo.com
+- Save products directly from schema.org product pages and supported store-specific product pages
+- Store-specific fallback integration: Trodo.com
 - View saved products in a clean popup UI
 - Groups saved products by marketplace
-- Displays product image, price, and discount
+- Displays product image, price, and last save date
 - Stores data locally in the browser (no backend)
 - Prevents duplicate entries
 
@@ -21,8 +21,8 @@ A Chrome extension that lets you save products from integrated stores into one l
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/shopping-cart-extension.git
-cd shopping-cart-extension
+git clone https://github.com/your-username/cart-keeper-extension.git
+cd cart-keeper-extension
 ```
 
 ### 2. Install dependencies
@@ -46,7 +46,7 @@ npm run build
 
 ### 5. Usage
 
-1. Open any product page on an integrated store
+1. Open any product page with schema.org product data or a supported store-specific integration
 2. Click the extension icon
 3. Save the product
 4. Open the extension popup to manage saved products
@@ -63,12 +63,10 @@ npm run build
 
 Marketplace support is split into two layers:
 
-1. Add shared marketplace metadata in `src/marketplaces.ts`.
-2. Add a content adapter in `src/content/adapters`.
-3. Register the adapter in `src/content/adapters/index.ts`.
-4. Add the marketplace host to `public/manifest.json` under `host_permissions` and `content_scripts.matches`.
+1. Add a content adapter in `src/content/adapters`.
+2. Register store-specific fallbacks after the schema.org adapter in `src/content/adapters/index.ts`.
 
-Adapters are responsible for detecting product pages and returning a normalized `SavedProduct`.
+Adapters are responsible for detecting product pages and returning a normalized `Product`.
 
 ### 8. Privacy
 

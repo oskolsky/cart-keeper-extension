@@ -1,8 +1,22 @@
 import type { MarketplaceAdapter } from './types'
 
-const TRODO_MARKETPLACE = {
-    id: 'trodo',
-    displayName: 'Trodo.com',
+const getMarketplaceName = () => {
+    return window.location.hostname.replace(/^www\./, '')
+}
+
+const getMarketplaceUrl = () => {
+    return window.location.origin
+}
+
+const getImageUrl = () => {
+    const imageUrl = document.querySelector('.product-img-block img')?.getAttribute('src') ?? ''
+    if (!imageUrl) return ''
+
+    try {
+        return new URL(imageUrl, window.location.href).toString()
+    } catch {
+        return imageUrl
+    }
 }
 
 const isProductPage = () => {
@@ -22,30 +36,22 @@ const parsePriceWithCurrency = (text: string) => {
 const parseProduct = () => {
     try {
         const name = document.querySelector('.product-info h1')?.textContent?.trim() ?? ''
-        const imageUrl = document.querySelector('.product-img-block img')?.getAttribute('src') ?? ''
+        const imageUrl = getImageUrl()
         const priceText = document.querySelector('.price-block .price')?.textContent ?? ''
         const { value: price, currency } = parsePriceWithCurrency(priceText)
-        const oldPriceText = document.querySelector('.price-block .old-price')?.textContent ?? ''
-        const oldPrice = oldPriceText ? parsePriceWithCurrency(oldPriceText).value : undefined
-        const discountPercent = oldPrice && oldPrice > price ? Math.round(((oldPrice - price) / oldPrice) * 100) : undefined
-        const productIdText = document.querySelector('.product-id span')?.textContent ?? ''
-        const productId = productIdText.replace('ID:', '').trim() || window.location.pathname
 
-        if (!name || Number.isNaN(price)) {
+        if (!name || !imageUrl || Number.isNaN(price)) {
             return null
         }
 
+        const marketplaceName = getMarketplaceName()
+
         return {
-            id: `${TRODO_MARKETPLACE.id}:${productId}`,
-            productId,
-            marketplaceId: TRODO_MARKETPLACE.id,
-            marketplaceName: TRODO_MARKETPLACE.displayName,
-            category: TRODO_MARKETPLACE.displayName,
+            marketplaceName,
+            marketplaceUrl: getMarketplaceUrl(),
             name,
             imageUrl,
             price,
-            oldPrice,
-            discountPercent,
             currency,
             url: window.location.href,
         }
@@ -55,7 +61,6 @@ const parseProduct = () => {
 }
 
 export const trodoAdapter: MarketplaceAdapter = {
-    ...TRODO_MARKETPLACE,
     isProductPage,
     parseProduct,
 }

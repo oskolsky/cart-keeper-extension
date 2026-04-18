@@ -1,7 +1,7 @@
 {
-  "name": "shopping-cart-extension",
+  "name": "cart-keeper-extension",
   "version": "1.0.1",
-  "description": "Chrome extension for saving products from integrated marketplaces.",
+  "description": "Chrome extension for saving products from online stores.",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,7 +10,6 @@
   },
   "license": "ISC",
   "dependencies": {
-    "lucide-react": "^1.8.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
   },

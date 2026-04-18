@@ -1,10 +1,9 @@
-import { isSupportedMarketplaceUrl } from '../marketplaces'
-import type { SavedProduct } from '../types'
+import type { Product } from '../types'
 
 type GetProductResponse =
     | {
           success: true
-          product: SavedProduct
+          product: Product
       }
     | {
           success: false
@@ -16,7 +15,7 @@ export const getProductFromPage = async (): Promise<GetProductResponse | null> =
 
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
 
-    if (!tab?.id || !tab.url || !isSupportedMarketplaceUrl(tab.url)) {
+    if (!tab?.id || !tab.url) {
         return null
     }
 

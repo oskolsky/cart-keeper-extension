@@ -1,8 +1,6 @@
-import type { SavedProduct } from '../../types'
+import type { Product } from '../../types'
 
 export type MarketplaceAdapter = {
-    id: string
-    displayName: string
     isProductPage: () => boolean
-    parseProduct: () => SavedProduct | null
+    parseProduct: () => Product | null
 }

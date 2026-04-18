@@ -3,39 +3,51 @@ import { withTracking } from '../utils/tracking'
 
 type SavedProductItemProps = {
     item: SavedProduct
-    onRemove: (id: string) => void
+    onRemove: (url: string) => void
+}
+
+const formatSavedAt = (savedAt: string) => {
+    return new Intl.DateTimeFormat(undefined, {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+    }).format(new Date(savedAt))
 }
 
 export const SavedProductItem = ({ item, onRemove }: SavedProductItemProps) => {
     const productUrl = withTracking(item.url)
 
+    const handleRemove = () => {
+        onRemove(item.url)
+    }
+
     return (
         <div className="flex w-full gap-x-5 border-t border-gray-300 py-5 first:border-t-0">
             <a href={productUrl} target="_blank" rel="noreferrer" className="shrink-0">
-                <img src={item.imageUrl} alt={item.name} className="size-15" />
+                <img src={item.imageUrl} alt={item.name} className="size-16" />
             </a>
 
             <div className="flex flex-1 flex-col justify-between">
-                <div>
-                    <a
-                        href={productUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="line-clamp-1 text-sm font-medium hover:text-[#0f766e]"
-                    >
-                        {item.name}
-                    </a>
-                    <div className="mt-1 text-xs text-gray-400">ID: {item.productId}</div>
+                <a
+                    href={productUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="line-clamp-1 text-sm font-medium hover:text-[#0f766e]"
+                >
+                    {item.name}
+                </a>
+
+                <div className="text-sm text-gray-500">
+                    {item.currency} {item.price.toFixed(2)}
                 </div>
 
                 <div className="flex items-center justify-between">
-                    <div className="text-sm">
-                        {item.currency} {item.price.toFixed(2)}
-                    </div>
+                    <div className="text-xs text-gray-400">{formatSavedAt(item.savedAt)}</div>
+
                     <button
                         type="button"
-                        className="cursor-pointer text-sm font-medium text-[#0f766e] hover:text-[#115e59]"
-                        onClick={() => onRemove(item.id)}
+                        className="cursor-pointer text-xs font-medium text-[#0f766e] hover:text-[#115e59]"
+                        onClick={handleRemove}
                     >
                         Remove
                     </button>

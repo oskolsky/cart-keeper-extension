@@ -4,14 +4,15 @@ import { Header } from './components/Header'
 import { Loader } from './components/Loader'
 import { SaveProductButton } from './components/SaveProductButton'
 import { SavedProductsList } from './components/SavedProductsList'
-import type { SavedProduct } from './types'
+import type { Product, SavedProduct } from './types'
 import { getProductFromPage } from './utils/currentProduct'
-import { addSavedProduct, getSavedProducts, removeSavedProduct } from './utils/storage'
+import { getSavedProducts, removeSavedProduct, saveProduct } from './utils/storage'
 
 export default function App() {
     const [items, setItems] = useState<SavedProduct[]>([])
-    const [loading, setLoading] = useState(true)
-    const [currentProduct, setCurrentProduct] = useState<SavedProduct | null>(null)
+    const [isLoading, setIsLoading] = useState(true)
+    const [currentProduct, setCurrentProduct] = useState<Product | null>(null)
+    const isCurrentProductSaved = currentProduct ? items.some(item => item.url === currentProduct.url) : false
 
     useEffect(() => {
         const init = async () => {
@@ -24,21 +25,21 @@ export default function App() {
                 setCurrentProduct(null)
             }
 
-            setLoading(false)
+            setIsLoading(false)
         }
 
         init()
     }, [])
 
-    const handleAdd = async () => {
+    const handleSaveProduct = async () => {
         if (!currentProduct) return
 
-        const updated = await addSavedProduct(currentProduct)
+        const updated = await saveProduct(currentProduct)
         setItems(updated)
     }
 
-    const handleRemove = async (id: string) => {
-        const updated = await removeSavedProduct(id)
+    const handleRemoveProduct = async (url: string) => {
+        const updated = await removeSavedProduct(url)
         setItems(updated)
     }
 
@@ -46,12 +47,19 @@ export default function App() {
         <div className="w-94.5 bg-white text-gray-900">
             <Header count={items.length} />
 
-            {loading ? (
+            {isLoading ? (
                 <Loader />
             ) : (
                 <div>
-                    {currentProduct ? <SaveProductButton onClick={handleAdd} /> : <div className="h-5" />}
-                    <SavedProductsList items={items} onRemove={handleRemove} />
+                    {currentProduct ? (
+                        <SaveProductButton
+                            label={isCurrentProductSaved ? 'Update product' : 'Save product'}
+                            onClick={handleSaveProduct}
+                        />
+                    ) : (
+                        <div className="h-5" />
+                    )}
+                    <SavedProductsList items={items} onRemove={handleRemoveProduct} />
                 </div>
             )}
         </div>

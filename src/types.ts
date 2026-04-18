@@ -1,14 +1,13 @@
-export type SavedProduct = {
-    id: string
-    productId: string
-    marketplaceId: string
+export type Product = {
     marketplaceName: string
-    category?: string
+    marketplaceUrl: string
     name: string
     imageUrl: string
     price: number
-    oldPrice?: number
-    discountPercent?: number
     currency: string
     url: string
+}
+
+export type SavedProduct = Product & {
+    savedAt: string
 }
