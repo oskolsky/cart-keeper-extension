@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "Cart Keeper",
+  "version": "1.0.1",
+  "description": "Save products from integrated stores in one local list",
+  "permissions": ["storage", "activeTab"],
+  "host_permissions": ["https://www.trodo.com/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://www.trodo.com/*"],
+      "js": ["content.js"]
+    }
+  ],
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Cart Keeper",
+    "default_icon": {
+      "16": "icons/16.png",
+      "48": "icons/48.png",
+      "128": "icons/128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/16.png",
+    "48": "icons/48.png",
+    "128": "icons/128.png"
+  }
+}
