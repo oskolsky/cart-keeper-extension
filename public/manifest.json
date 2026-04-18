@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Cart Keeper",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "description": "Save products from online stores in one local list",
   "permissions": ["storage"],
   "host_permissions": ["http://*/*", "https://*/*"],
