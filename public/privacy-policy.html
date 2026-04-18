@@ -57,8 +57,11 @@
       </p>
 
       <h2>Data Collection</h2>
-      <p>This extension does not collect, store, or transmit any personal data to external servers.</p>
-      <p>All data is stored locally in the user's browser using Chrome's built-in storage.</p>
+      <p>This extension does <strong>not collect, store, or transmit any personal data</strong> to external servers.</p>
+      <p>
+        All data is stored locally in the user's browser using Chrome's built-in storage
+        (<code>chrome.storage.local</code>).
+      </p>
 
       <h2>Data Stored Locally</h2>
       <ul>
@@ -77,15 +80,22 @@
 
       <h2>Permissions Used</h2>
       <ul>
-        <li><strong>storage</strong> stores saved products locally.</li>
-        <li><strong>activeTab</strong> accesses the current store page.</li>
-        <li><strong>host permissions</strong> read schema.org product information and supported store-specific pages.</li>
+        <li><strong>storage</strong> — to store saved products locally.</li>
+        <li>
+          <strong>host permissions (http/https pages)</strong> — to detect whether the current page is a product page
+          and read product information when a page exposes schema.org data or has a supported store-specific
+          integration.
+        </li>
       </ul>
 
       <h2>Third-Party Services</h2>
       <p>This extension does not use any third-party analytics, tracking, or external APIs.</p>
 
+      <h2>Changes to This Policy</h2>
+      <p>This Privacy Policy may be updated from time to time. Any changes will be reflected in this document.</p>
+
       <h2>Contact</h2>
+      <p>If you have any questions, please contact:</p>
       <p><a href="mailto:oskolsky.maxim@gmail.com">oskolsky.maxim@gmail.com</a></p>
     </main>
   </body>

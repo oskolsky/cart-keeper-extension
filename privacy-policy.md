@@ -36,8 +36,7 @@ We do not share, sell, or transmit any user data to third parties.
 The extension may request the following permissions:
 
 - **storage** — to store saved products locally
-- **activeTab** — to access the current store page
-- **host permissions (http/https pages)** — to read schema.org product information from store pages and supported store-specific pages
+- **host permissions (http/https pages)** — to detect whether the current page is a product page and read product information when a page exposes schema.org data or has a supported store-specific integration
 
 These permissions are used only for the core functionality of the extension.
 

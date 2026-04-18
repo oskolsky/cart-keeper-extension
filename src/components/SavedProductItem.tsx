@@ -37,16 +37,16 @@ export const SavedProductItem = ({ item, onRemove }: SavedProductItemProps) => {
                     {item.name}
                 </a>
 
-                <div className="text-sm text-gray-500">
-                    {item.currency} {item.price.toFixed(2)}
-                </div>
+                <div className="text-xs text-gray-400">{formatSavedAt(item.savedAt)}</div>
 
                 <div className="flex items-center justify-between">
-                    <div className="text-xs text-gray-400">{formatSavedAt(item.savedAt)}</div>
+                    <div className="text-sm">
+                        {item.currency} {item.price.toFixed(2)}
+                    </div>
 
                     <button
                         type="button"
-                        className="cursor-pointer text-xs font-medium text-[#0f766e] hover:text-[#115e59]"
+                        className="cursor-pointer text-sm font-medium text-[#0f766e] hover:text-[#115e59]"
                         onClick={handleRemove}
                     >
                         Remove
