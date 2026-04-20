@@ -1,6 +1,6 @@
 # Cart Keeper
 
-A Chrome extension that lets you save products from integrated stores into one local list.
+A Chrome extension that lets you save products from online stores into one local list.
 
 [![Main Screenshot](./public/screenshots/main.png)](./public/screenshots/main.png)
 
@@ -8,14 +8,28 @@ A Chrome extension that lets you save products from integrated stores into one l
 
 - Save products directly from schema.org product pages and supported store-specific product pages
 - Detect strict generic product pages when schema.org is missing
-- Store-specific fallback integration: Trodo.com
+- Store-specific fallback integration: Trodo
 - View saved products in a clean popup UI
 - Groups saved products by marketplace
 - Displays product image, price, and last save date
 - Stores data locally in the browser (no backend)
-- Prevents duplicate entries
+- Updates existing products instead of creating duplicates
 
 ---
+
+## How It Works
+
+Cart Keeper checks the active tab and enables the extension action when the current page looks like a product page.
+When a product is saved, the extension stores the product name, image URL, price, currency, product URL, marketplace name,
+marketplace URL, and last save date in `chrome.storage.local`.
+
+Product detection has three layers:
+
+1. **schema.org product data** — first, Cart Keeper looks for structured product data with an offer. This is the most reliable generic path because many stores expose `Product` and `Offer` data for search engines.
+2. **Store-specific integrations** — if structured data is not available, Cart Keeper checks supported store adapters, such as Trodo, where the product layout is known.
+3. **Generic product signals** — if there is no schema.org data or supported adapter, Cart Keeper looks for strong signals such as a product title, image, price, and buy/add-to-cart controls.
+
+See the user-facing [How it works](./public/how-it-works.html) page for the short product explanation.
 
 ## Installation (Development)
 
@@ -47,10 +61,11 @@ npm run build
 
 ### 5. Usage
 
-1. Open any product page with schema.org product data, strong product-page signals, or a supported store-specific integration
-2. Click the extension icon
-3. Save the product
-4. Open the extension popup to manage saved products
+1. Open a product page.
+2. Click the extension icon.
+3. Press **Add** when Cart Keeper detects a product.
+4. Press **Update** if the product is already saved and you want to refresh its data.
+5. Use the popup list to open or remove saved products.
 
 ### 6. Tech Stack
 

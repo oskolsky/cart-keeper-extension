@@ -19,25 +19,34 @@ const GRAY_ICON_PATHS = {
     128: 'icons/128-gray.png',
 }
 
+const ignoreChromeError = () => {
+    chrome.runtime.lastError
+}
+
 const setActionState = (tabId: number, canSave: boolean) => {
-    chrome.action.setBadgeText({ tabId, text: '' })
+    chrome.action.setBadgeText({ tabId, text: '' }, ignoreChromeError)
 
     if (canSave) {
-        chrome.action.setTitle({ tabId, title: 'Save product with Cart Keeper' })
-        chrome.action.setIcon({ tabId, path: COLOR_ICON_PATHS })
+        chrome.action.setTitle({ tabId, title: 'Save product with Cart Keeper' }, ignoreChromeError)
+        chrome.action.setIcon({ tabId, path: COLOR_ICON_PATHS }, ignoreChromeError)
         return
     }
 
-    chrome.action.setTitle({ tabId, title: 'Open Cart Keeper' })
-    chrome.action.setIcon({ tabId, path: GRAY_ICON_PATHS })
+    chrome.action.setTitle({ tabId, title: 'Open Cart Keeper' }, ignoreChromeError)
+    chrome.action.setIcon({ tabId, path: GRAY_ICON_PATHS }, ignoreChromeError)
 }
 
 const requestProductStatus = (tabId: number) => {
     setActionState(tabId, false)
 
-    chrome.tabs.sendMessage(tabId, { type: 'GET_PRODUCT_STATUS' }, {}, (response?: ProductStatusResponse) => {
+    chrome.tabs.get(tabId, tab => {
         if (chrome.runtime.lastError) return
-        setActionState(tabId, Boolean(response?.success))
+        if (!tab.id || tab.status !== 'complete') return
+
+        chrome.tabs.sendMessage(tab.id, { type: 'GET_PRODUCT_STATUS' }, {}, (response?: ProductStatusResponse) => {
+            if (chrome.runtime.lastError) return
+            setActionState(tab.id!, Boolean(response?.success))
+        })
     })
 }
 

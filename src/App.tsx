@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 
+import { Footer } from './components/Footer'
 import { Header } from './components/Header'
 import { Loader } from './components/Loader'
 import { SavedProductsList } from './components/SavedProductsList'
@@ -55,10 +56,12 @@ export default function App() {
             {isLoading ? (
                 <Loader />
             ) : (
-                <div className="flex min-h-0 flex-1 flex-col">
+                <div className="flex min-h-60 flex-1 flex-col">
                     <SavedProductsList items={items} onRemove={handleRemoveProduct} />
                 </div>
             )}
+
+            <Footer />
         </div>
     )
 }

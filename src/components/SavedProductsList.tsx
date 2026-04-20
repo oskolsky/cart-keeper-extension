@@ -65,7 +65,7 @@ export const SavedProductsList = ({ items, onRemove }: SavedProductsListProps) =
     }
 
     return (
-        <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-5">
+        <div className="min-h-0 flex-1 overflow-y-auto px-5">
             {groups.map(group => {
                 const groupKey = getMarketplaceGroupKey(group)
 

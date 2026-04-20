@@ -22,7 +22,7 @@ export const SavedProductItem = ({ item, onRemove }: SavedProductItemProps) => {
     }
 
     return (
-        <div className="flex gap-x-5 border-b border-gray-200 px-3 py-5">
+        <div className="flex gap-x-5 border-b border-gray-200 px-3 py-5 last:border-0">
             <a href={productUrl} target="_blank" rel="noreferrer" className="shrink-0">
                 <img src={item.imageUrl} alt={item.name} className="size-16" />
             </a>
