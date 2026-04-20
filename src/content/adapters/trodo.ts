@@ -1,11 +1,11 @@
+import { getPageMarketplaceName, getPageMarketplaceUrl } from './marketplace'
 import type { MarketplaceAdapter } from './types'
 
-const getMarketplaceName = () => {
-    return window.location.hostname.replace(/^www\./, '')
-}
+const isTrodoHost = () => {
+    const hostnameParts = window.location.hostname.toLowerCase().split('.')
+    const domain = hostnameParts.at(-2)
 
-const getMarketplaceUrl = () => {
-    return window.location.origin
+    return domain === 'trodo'
 }
 
 const getImageUrl = () => {
@@ -20,6 +20,8 @@ const getImageUrl = () => {
 }
 
 const isProductPage = () => {
+    if (!isTrodoHost()) return false
+
     return Boolean(document.querySelector('.product-info h1'))
 }
 
@@ -34,6 +36,8 @@ const parsePriceWithCurrency = (text: string) => {
 }
 
 const parseProduct = () => {
+    if (!isTrodoHost()) return null
+
     try {
         const name = document.querySelector('.product-info h1')?.textContent?.trim() ?? ''
         const imageUrl = getImageUrl()
@@ -44,11 +48,9 @@ const parseProduct = () => {
             return null
         }
 
-        const marketplaceName = getMarketplaceName()
-
         return {
-            marketplaceName,
-            marketplaceUrl: getMarketplaceUrl(),
+            marketplaceName: getPageMarketplaceName(),
+            marketplaceUrl: getPageMarketplaceUrl(),
             name,
             imageUrl,
             price,

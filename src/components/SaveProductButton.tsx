@@ -1,18 +1,21 @@
+import { ShoppingBasketIcon } from 'lucide-react'
+
 type SaveProductButtonProps = {
-    label?: string
+    label: string
+    isDisabled: boolean
     onClick: () => void
 }
 
-export const SaveProductButton = ({ label = 'Save product', onClick }: SaveProductButtonProps) => {
+export const SaveProductButton = ({ label, isDisabled, onClick }: SaveProductButtonProps) => {
     return (
-        <div className="shrink-0 p-5">
-            <button
-                type="button"
-                className="h-10 w-full cursor-pointer rounded-lg bg-[#0f766e] text-sm font-medium text-white hover:bg-[#115e59] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0f766e]"
-                onClick={onClick}
-            >
-                {label}
-            </button>
-        </div>
+        <button
+            type="button"
+            className="flex h-9 cursor-pointer items-center justify-center gap-x-2 rounded-lg bg-[#0f766e] p-3 font-semibold text-white hover:bg-[#115e59] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0f766e] disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 disabled:hover:bg-gray-300"
+            disabled={isDisabled}
+            onClick={onClick}
+        >
+            <ShoppingBasketIcon size={20} />
+            {label}
+        </button>
     )
 }

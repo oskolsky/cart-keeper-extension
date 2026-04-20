@@ -1,14 +1,14 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import 'tailwindcss';
 
 :root {
-  --font-inter: "Inter", sans-serif;
-  --font-sans: var(--font-inter);
+    --font-inter: 'Inter', sans-serif;
+    --font-sans: var(--font-inter);
 }
 
 html,
 body,
 #root {
-  margin: 0;
-  overflow: hidden;
+    margin: 0;
+    overflow: hidden;
 }

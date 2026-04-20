@@ -1,22 +1,28 @@
+import { SaveProductButton } from './SaveProductButton'
+
 type HeaderProps = {
-    count: number
+    saveLabel: string
+    savedProductsCount: number
+    hasCurrentProduct: boolean
+    onSaveProduct: () => void
 }
 
-export const Header = ({ count }: HeaderProps) => {
+const getSavedProductsLabel = (count: number) => {
+    return count === 1 ? 'In your cart · 1 item' : `In your cart · ${count} items`
+}
+
+export const Header = ({ saveLabel, savedProductsCount, hasCurrentProduct, onSaveProduct }: HeaderProps) => {
     return (
         <div className="sticky top-0 z-20 bg-white px-5">
             <div className="flex items-center justify-between py-5">
-                <div className="flex items-center gap-2">
-                    <img src="/icons/128.png" alt="Cart Keeper" width={32} height={32} />
-                    <span className="text-base font-bold text-gray-900">Cart Keeper</span>
+                <div>
+                    <div className="text-base leading-5 font-semibold text-gray-900">Cart Keeper</div>
+                    <div className="text-[11px] leading-4 font-medium tracking-wide text-gray-400 uppercase">
+                        {getSavedProductsLabel(savedProductsCount)}
+                    </div>
                 </div>
-
                 <div className="flex items-center gap-2">
-                    {count > 0 && (
-                        <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#de3618] px-1 text-xs font-semibold text-white">
-                            {count}
-                        </span>
-                    )}
+                    <SaveProductButton label={saveLabel} isDisabled={!hasCurrentProduct} onClick={onSaveProduct} />
                 </div>
             </div>
 

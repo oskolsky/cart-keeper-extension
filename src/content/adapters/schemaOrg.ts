@@ -1,4 +1,5 @@
 import type { Product } from '../../types'
+import { getPageMarketplaceName, getPageMarketplaceUrl } from './marketplace'
 import type { MarketplaceAdapter } from './types'
 
 type JsonObject = Record<string, unknown>
@@ -107,14 +108,6 @@ const getImageUrl = (product: JsonObject) => {
     }
 }
 
-const getMarketplaceName = () => {
-    return window.location.hostname.replace(/^www\./, '')
-}
-
-const getMarketplaceUrl = () => {
-    return window.location.origin
-}
-
 const readElementValue = (element: Element | null) => {
     if (!element) return ''
     if (element instanceof HTMLMetaElement) return element.content.trim()
@@ -160,11 +153,9 @@ const parseMicrodataProduct = (): Product | null => {
 
     if (!name || price === null || !imageUrl) return null
 
-    const marketplaceName = getMarketplaceName()
-
     return {
-        marketplaceName,
-        marketplaceUrl: getMarketplaceUrl(),
+        marketplaceName: getPageMarketplaceName(),
+        marketplaceUrl: getPageMarketplaceUrl(),
         name,
         imageUrl,
         price,
@@ -192,11 +183,9 @@ const parseProduct = (): Product | null => {
 
         if (!name || price === null || !imageUrl) return null
 
-        const marketplaceName = getMarketplaceName()
-
         return {
-            marketplaceName,
-            marketplaceUrl: getMarketplaceUrl(),
+            marketplaceName: getPageMarketplaceName(),
+            marketplaceUrl: getPageMarketplaceUrl(),
             name,
             imageUrl,
             price,

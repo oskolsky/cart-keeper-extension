@@ -36,7 +36,7 @@ We do not share, sell, or transmit any user data to third parties.
 The extension may request the following permissions:
 
 - **storage** — to store saved products locally
-- **host permissions (http/https pages)** — to detect whether the current page is a product page and read product information when a page exposes schema.org data or has a supported store-specific integration
+- **host permissions (http/https pages)** — to detect whether the current page is a product page and read product information when a page exposes schema.org data, strong product-page signals, or has a supported store-specific integration
 
 These permissions are used only for the core functionality of the extension.
 

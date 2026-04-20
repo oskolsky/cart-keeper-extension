@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 
 import { Header } from './components/Header'
 import { Loader } from './components/Loader'
-import { SaveProductButton } from './components/SaveProductButton'
 import { SavedProductsList } from './components/SavedProductsList'
 import type { Product, SavedProduct } from './types'
 import { getProductFromPage } from './utils/currentProduct'
@@ -46,20 +45,17 @@ export default function App() {
 
     return (
         <div className="flex max-h-145 w-94.5 flex-col overflow-hidden bg-white text-gray-900">
-            <Header count={items.length} />
+            <Header
+                saveLabel={isCurrentProductSaved ? 'Update' : 'Add'}
+                savedProductsCount={items.length}
+                hasCurrentProduct={Boolean(currentProduct)}
+                onSaveProduct={handleSaveProduct}
+            />
 
             {isLoading ? (
                 <Loader />
             ) : (
                 <div className="flex min-h-0 flex-1 flex-col">
-                    {currentProduct ? (
-                        <SaveProductButton
-                            label={isCurrentProductSaved ? 'Update product' : 'Save product'}
-                            onClick={handleSaveProduct}
-                        />
-                    ) : (
-                        <div className="h-5">&nbsp;</div>
-                    )}
                     <SavedProductsList items={items} onRemove={handleRemoveProduct} />
                 </div>
             )}

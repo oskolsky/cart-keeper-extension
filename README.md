@@ -7,6 +7,7 @@ A Chrome extension that lets you save products from integrated stores into one l
 ## Features
 
 - Save products directly from schema.org product pages and supported store-specific product pages
+- Detect strict generic product pages when schema.org is missing
 - Store-specific fallback integration: Trodo.com
 - View saved products in a clean popup UI
 - Groups saved products by marketplace
@@ -46,7 +47,7 @@ npm run build
 
 ### 5. Usage
 
-1. Open any product page with schema.org product data or a supported store-specific integration
+1. Open any product page with schema.org product data, strong product-page signals, or a supported store-specific integration
 2. Click the extension icon
 3. Save the product
 4. Open the extension popup to manage saved products
@@ -63,8 +64,10 @@ npm run build
 
 Marketplace support is split into two layers:
 
-1. Add a content adapter in `src/content/adapters`.
-2. Register store-specific fallbacks after the schema.org adapter in `src/content/adapters/index.ts`.
+1. Use the default schema.org adapter for stores that expose product data.
+2. Add a content adapter in `src/content/adapters` when a store needs a dedicated fallback parser.
+3. Register store-specific fallbacks after the schema.org adapter and before the generic adapter in `src/content/adapters/index.ts`.
+4. Keep the generic adapter last because it is heuristic-based.
 
 Adapters are responsible for detecting product pages and returning a normalized `Product`.
 

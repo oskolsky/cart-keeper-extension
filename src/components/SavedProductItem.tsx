@@ -22,7 +22,7 @@ export const SavedProductItem = ({ item, onRemove }: SavedProductItemProps) => {
     }
 
     return (
-        <div className="flex w-full gap-x-5 border-t border-gray-300 py-5 first:border-t-0">
+        <div className="flex gap-x-5 border-b border-gray-200 px-3 py-5">
             <a href={productUrl} target="_blank" rel="noreferrer" className="shrink-0">
                 <img src={item.imageUrl} alt={item.name} className="size-16" />
             </a>
@@ -37,7 +37,7 @@ export const SavedProductItem = ({ item, onRemove }: SavedProductItemProps) => {
                     >
                         {item.name}
                     </a>
-                    <div className="text-xs text-gray-400">{formatSavedAt(item.savedAt)}</div>
+                    <div className="text-xs text-gray-400 uppercase">{formatSavedAt(item.savedAt)}</div>
                 </div>
 
                 <div className="flex items-center justify-between">
