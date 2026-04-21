@@ -6,6 +6,7 @@ import { Loader } from './components/Loader'
 import { SavedProductsList } from './components/SavedProductsList'
 import type { Product, SavedProduct } from './types'
 import { getProductFromPage } from './utils/currentProduct'
+import { isSameProductUrl } from './utils/productUrl'
 import { getSavedProducts, removeSavedProduct, saveProduct } from './utils/storage'
 
 export default function App() {
@@ -13,7 +14,9 @@ export default function App() {
     const [isLoading, setIsLoading] = useState(true)
     const [currentProduct, setCurrentProduct] = useState<Product | null>(null)
 
-    const isCurrentProductSaved = currentProduct ? items.some(item => item.url === currentProduct.url) : false
+    const isCurrentProductSaved = currentProduct
+        ? items.some(item => isSameProductUrl(item.url, currentProduct.url))
+        : false
 
     useEffect(() => {
         const init = async () => {

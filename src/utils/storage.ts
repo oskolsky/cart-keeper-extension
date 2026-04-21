@@ -1,4 +1,5 @@
 import type { Product, SavedProduct } from '../types'
+import { isSameProductUrl, normalizeProductUrl } from './productUrl'
 
 const SAVED_PRODUCTS_STORAGE_KEY = 'favorites'
 
@@ -20,15 +21,19 @@ const saveSavedProducts = async (items: SavedProduct[]) => {
 
 export const saveProduct = async (product: Product) => {
     const items = await getSavedProducts()
-    const filtered = items.filter(item => item.url !== product.url)
-    const updated = [{ ...product, savedAt: new Date().toISOString() }, ...filtered]
+    const normalizedProduct = {
+        ...product,
+        url: normalizeProductUrl(product.url),
+    }
+    const filtered = items.filter(item => !isSameProductUrl(item.url, normalizedProduct.url))
+    const updated = [{ ...normalizedProduct, savedAt: new Date().toISOString() }, ...filtered]
     await saveSavedProducts(updated)
     return updated
 }
 
 export const removeSavedProduct = async (url: string) => {
     const items = await getSavedProducts()
-    const updated = items.filter(item => item.url !== url)
+    const updated = items.filter(item => !isSameProductUrl(item.url, url))
     await saveSavedProducts(updated)
     return updated
 }
