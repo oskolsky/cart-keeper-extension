@@ -41,6 +41,7 @@ const IMAGE_SELECTORS = [
     'main img',
     '[role="main"] img',
     'section[aria-label*="image" i] img',
+    'img[aria-label*="goods image" i]',
     'img[class*="product" i]',
     'img[class*="part" i]',
     'img[class*="listing-inline-image" i]',
@@ -99,6 +100,13 @@ const cleanProductName = (name: string) => {
     return name.replace(/^more information for\s+/i, '').trim()
 }
 
+const getImageSource = (image: HTMLImageElement) => {
+    const loadedUrl = image.currentSrc || image.src
+    if (loadedUrl && !loadedUrl.startsWith('data:image')) return loadedUrl
+
+    return image.dataset.src || loadedUrl
+}
+
 const getProductName = () => {
     const name =
         document.querySelector<HTMLHeadingElement>('main h1')?.textContent?.trim() ||
@@ -115,15 +123,18 @@ const getProductName = () => {
 }
 
 const isLikelyProductImage = (image: HTMLImageElement, area: number) => {
-    const src = image.currentSrc || image.src
+    const src = getImageSource(image)
     const alt = image.alt.toLowerCase()
+    const ariaLabel = image.getAttribute('aria-label')?.toLowerCase() ?? ''
     const className = image.className.toString().toLowerCase()
     const id = image.id.toLowerCase()
     const hasProductImageHint =
+        ariaLabel.includes('goods image') ||
         className.includes('product') ||
         className.includes('part') ||
         className.includes('listing-inline-image') ||
         id.includes('inlineimg') ||
+        src.includes('/product/') ||
         src.includes('/info/')
 
     return (
@@ -134,6 +145,7 @@ const isLikelyProductImage = (image: HTMLImageElement, area: number) => {
         !src.includes('logo') &&
         !src.includes('arrow') &&
         !alt.includes('logo') &&
+        !src.startsWith('data:image') &&
         (area >= 10000 || hasProductImageHint)
     )
 }
@@ -154,7 +166,7 @@ const getProductImageUrl = () => {
         .filter(({ image, area }) => isLikelyProductImage(image, area))
         .sort((first, second) => second.area - first.area)
 
-    return toAbsoluteUrl(images[0]?.image.currentSrc || images[0]?.image.src || '')
+    return toAbsoluteUrl(images[0] ? getImageSource(images[0].image) : '')
 }
 
 const parsePrice = (text: string): PriceResult | null => {
@@ -212,7 +224,7 @@ const getPriceFromDom = () => {
 const hasBuyButton = () => {
     const actions = Array.from(
         document.querySelectorAll<HTMLButtonElement | HTMLAnchorElement | HTMLInputElement>(
-            'button, a[role="button"], input[type="submit"]',
+            'button, [role="button"], input[type="submit"]',
         ),
     )
 
@@ -225,7 +237,11 @@ const hasBuyButton = () => {
 }
 
 const hasProductUrlPattern = () => {
-    return /\/(product|products|p|item|dp|sku)\//i.test(window.location.pathname)
+    return (
+        /\/(product|products|p|item|dp|sku)\//i.test(window.location.pathname) ||
+        /-g-\d+\.html$/i.test(window.location.pathname) ||
+        new URLSearchParams(window.location.search).has('goods_id')
+    )
 }
 
 const buildProductCandidate = (): ProductCandidate | null => {

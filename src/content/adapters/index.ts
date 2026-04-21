@@ -5,6 +5,13 @@ import type { MarketplaceAdapter } from './types'
 
 const adapters: MarketplaceAdapter[] = [schemaOrgAdapter, trodoAdapter, genericProductAdapter]
 
-export const getActiveAdapter = () => {
-    return adapters.find(adapter => adapter.isProductPage()) ?? null
+export const parseProductFromAdapters = () => {
+    for (const adapter of adapters) {
+        if (!adapter.isProductPage()) continue
+
+        const product = adapter.parseProduct()
+        if (product) return product
+    }
+
+    return null
 }

@@ -1,7 +1,32 @@
-const TRACKING_PARAM_NAMES = new Set(['fbclid', 'gclid', 'gbraid', 'mc_cid', 'mc_eid', 'msclkid', 'wbraid'])
+const TRACKING_PARAM_NAMES = new Set([
+    '_x_sessn_id',
+    'ab_scene',
+    'enable_vqr',
+    'fbclid',
+    'freesia_scene',
+    'gbraid',
+    'gclid',
+    'mc_cid',
+    'mc_eid',
+    'msclkid',
+    'refer_page_el_sn',
+    'refer_page_id',
+    'refer_page_name',
+    'refer_page_sn',
+    'spec_gallery_id',
+    'top_gallery_url',
+    'wbraid',
+])
 
 const isTrackingParam = (name: string) => {
-    return name.toLowerCase().startsWith('utm_') || TRACKING_PARAM_NAMES.has(name.toLowerCase())
+    const normalizedName = name.toLowerCase()
+
+    return (
+        normalizedName.startsWith('utm_') ||
+        normalizedName.startsWith('_oak_') ||
+        normalizedName.startsWith('refer_') ||
+        TRACKING_PARAM_NAMES.has(normalizedName)
+    )
 }
 
 export const normalizeProductUrl = (url: string) => {

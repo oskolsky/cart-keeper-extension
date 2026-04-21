@@ -1,10 +1,7 @@
-import { getActiveAdapter } from './adapters'
+import { parseProductFromAdapters } from './adapters'
 
 const getCanSaveProduct = () => {
-    const adapter = getActiveAdapter()
-    if (!adapter) return false
-
-    return Boolean(adapter.parseProduct())
+    return Boolean(parseProductFromAdapters())
 }
 
 const notifyProductStatus = () => {
@@ -34,14 +31,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     }
 
     if (message.type === 'GET_PRODUCT') {
-        const adapter = getActiveAdapter()
-
-        if (!adapter) {
-            sendResponse({ success: false })
-            return
-        }
-
-        const product = adapter.parseProduct()
+        const product = parseProductFromAdapters()
 
         sendResponse({
             success: Boolean(product),
