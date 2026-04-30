@@ -1,62 +1,32 @@
-import { getPageMarketplaceName, getPageMarketplaceUrl } from './marketplace'
-import type { MarketplaceAdapter } from './types'
+import type { MarketplaceAdapter } from '../../types'
+import { buildProduct, matchesSecondLevelDomain, parsePriceText, toAbsoluteUrl } from './helpers'
 
-const isTrodoHost = () => {
-    const hostnameParts = window.location.hostname.toLowerCase().split('.')
-    const domain = hostnameParts.at(-2)
-
-    return domain === 'trodo'
-}
+const NAME_SELECTOR = '.product-info h1'
+const IMAGE_SELECTOR = '.product-img-block img'
+const PRICE_SELECTOR = '.price-block .price'
 
 const getImageUrl = () => {
-    const imageUrl = document.querySelector('.product-img-block img')?.getAttribute('src') ?? ''
-    if (!imageUrl) return ''
-
-    try {
-        return new URL(imageUrl, window.location.href).toString()
-    } catch {
-        return imageUrl
-    }
+    return toAbsoluteUrl(document.querySelector(IMAGE_SELECTOR)?.getAttribute('src') ?? '')
 }
 
 const isProductPage = () => {
-    if (!isTrodoHost()) return false
+    if (!matchesSecondLevelDomain('trodo')) return false
 
-    return Boolean(document.querySelector('.product-info h1'))
-}
-
-const parsePriceWithCurrency = (text: string) => {
-    const cleaned = text.trim()
-    const currencyMatch = cleaned.match(/[€$£]/)
-
-    return {
-        value: parseFloat(cleaned.replace(/[^\d.,]/g, '').replace(',', '.')),
-        currency: currencyMatch ? currencyMatch[0] : '',
-    }
+    return Boolean(document.querySelector(NAME_SELECTOR))
 }
 
 const parseProduct = () => {
-    if (!isTrodoHost()) return null
+    if (!matchesSecondLevelDomain('trodo')) return null
 
     try {
-        const name = document.querySelector('.product-info h1')?.textContent?.trim() ?? ''
-        const imageUrl = getImageUrl()
-        const priceText = document.querySelector('.price-block .price')?.textContent ?? ''
-        const { value: price, currency } = parsePriceWithCurrency(priceText)
-
-        if (!name || !imageUrl || Number.isNaN(price)) {
-            return null
-        }
-
-        return {
-            marketplaceName: getPageMarketplaceName(),
-            marketplaceUrl: getPageMarketplaceUrl(),
-            name,
-            imageUrl,
-            price,
-            currency,
+        return buildProduct({
+            name: document.querySelector(NAME_SELECTOR)?.textContent?.trim() ?? '',
+            imageUrl: getImageUrl(),
+            price: parsePriceText(document.querySelector(PRICE_SELECTOR)?.textContent ?? '', {
+                requireCurrency: false,
+            }),
             url: window.location.href,
-        }
+        })
     } catch {
         return null
     }

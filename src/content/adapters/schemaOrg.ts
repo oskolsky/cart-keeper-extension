@@ -1,6 +1,6 @@
-import type { Product } from '../../types'
+import type { MarketplaceAdapter, Product } from '../../types'
+import { getMetaContent, parsePriceValue, readElementValue, toAbsoluteUrl } from './helpers'
 import { getPageMarketplaceName, getPageMarketplaceUrl } from './marketplace'
-import type { MarketplaceAdapter } from './types'
 
 type JsonObject = Record<string, unknown>
 
@@ -74,9 +74,7 @@ const parseJsonLd = () => {
 }
 
 const parsePrice = (value: unknown) => {
-    const text = getText(value)
-    const price = parseFloat(text.replace(/[^\d.,]/g, '').replace(',', '.'))
-    return Number.isNaN(price) ? null : price
+    return parsePriceValue(getText(value))
 }
 
 const getPrimaryOffer = (product: JsonObject) => {
@@ -86,40 +84,23 @@ const getPrimaryOffer = (product: JsonObject) => {
 const getProductUrl = (product: JsonObject) => {
     const url = getText(product.url) || window.location.href
 
-    try {
-        return new URL(url, window.location.href).toString()
-    } catch {
-        return window.location.href
-    }
+    return toAbsoluteUrl(url, window.location.href)
 }
 
 const getImageUrl = (product: JsonObject) => {
-    const imageUrl =
-        getFirstText(product.image) ||
-        document.querySelector<HTMLMetaElement>('meta[property="og:image"]')?.content?.trim() ||
-        ''
+    const imageUrl = getFirstText(product.image) || getMetaContent('meta[property="og:image"]') || ''
 
     if (!imageUrl) return ''
 
-    try {
-        return new URL(imageUrl, window.location.href).toString()
-    } catch {
-        return imageUrl
-    }
-}
-
-const readElementValue = (element: Element | null) => {
-    if (!element) return ''
-    if (element instanceof HTMLMetaElement) return element.content.trim()
-    if (element instanceof HTMLImageElement) return element.src.trim()
-    if (element instanceof HTMLAnchorElement) return element.href.trim()
-    return element.textContent?.trim() || ''
+    return toAbsoluteUrl(imageUrl, imageUrl)
 }
 
 const findMicrodataProduct = () => {
     return (
         Array.from(document.querySelectorAll<HTMLElement>('[itemtype]')).find(element => {
-            return element.itemType.toString().toLowerCase().includes('schema.org/product')
+            return (element.itemType?.toString() || element.getAttribute('itemtype') || '')
+                .toLowerCase()
+                .includes('schema.org/product')
         }) ?? null
     )
 }
@@ -127,7 +108,7 @@ const findMicrodataProduct = () => {
 const findMicrodataOffer = (productElement: HTMLElement) => {
     return (
         Array.from(productElement.querySelectorAll<HTMLElement>('[itemtype], [itemprop="offers"]')).find(element => {
-            const itemType = element.itemType.toString().toLowerCase()
+            const itemType = (element.itemType?.toString() || element.getAttribute('itemtype') || '').toLowerCase()
             return itemType.includes('schema.org/offer') || element.getAttribute('itemprop') === 'offers'
         }) ?? null
     )

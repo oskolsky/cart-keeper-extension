@@ -6,6 +6,7 @@ import { Loader } from './components/Loader'
 import { SavedProductsList } from './components/SavedProductsList'
 import type { Product, SavedProduct } from './types'
 import { getProductFromPage } from './utils/currentProduct'
+import { getMarketplaceGroupKey } from './utils/marketplace'
 import { isSameProductUrl } from './utils/productUrl'
 import { getSavedProducts, removeSavedProduct, saveProduct } from './utils/storage'
 
@@ -13,6 +14,7 @@ export default function App() {
     const [items, setItems] = useState<SavedProduct[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [currentProduct, setCurrentProduct] = useState<Product | null>(null)
+    const [autoExpandedGroupKey, setAutoExpandedGroupKey] = useState<string | null>(null)
 
     const isCurrentProductSaved = currentProduct
         ? items.some(item => isSameProductUrl(item.url, currentProduct.url))
@@ -40,6 +42,7 @@ export default function App() {
 
         const updated = await saveProduct(currentProduct)
         setItems(updated)
+        setAutoExpandedGroupKey(getMarketplaceGroupKey(currentProduct))
     }
 
     const handleRemoveProduct = async (url: string) => {
@@ -60,7 +63,11 @@ export default function App() {
                 <Loader />
             ) : (
                 <div className="flex min-h-60 flex-1 flex-col">
-                    <SavedProductsList items={items} onRemove={handleRemoveProduct} />
+                    <SavedProductsList
+                        items={items}
+                        autoExpandedGroupKey={autoExpandedGroupKey}
+                        onRemove={handleRemoveProduct}
+                    />
                 </div>
             )}
 

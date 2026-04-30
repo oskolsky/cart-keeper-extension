@@ -1,9 +1,10 @@
+import type { MarketplaceAdapter } from '../../types'
 import { genericProductAdapter } from './genericProduct'
 import { schemaOrgAdapter } from './schemaOrg'
+import { steamAdapter } from './steam'
 import { trodoAdapter } from './trodo'
-import type { MarketplaceAdapter } from './types'
 
-const adapters: MarketplaceAdapter[] = [schemaOrgAdapter, trodoAdapter, genericProductAdapter]
+const adapters: MarketplaceAdapter[] = [trodoAdapter, steamAdapter, schemaOrgAdapter, genericProductAdapter]
 
 export const parseProductFromAdapters = () => {
     for (const adapter of adapters) {

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import type { SavedProduct } from '../types'
 import { getMarketplaceGroupKey } from '../utils/marketplace'
@@ -8,6 +8,7 @@ import { SavedProductsListSection } from './SavedProductsListSection'
 
 type SavedProductsListProps = {
     items: SavedProduct[]
+    autoExpandedGroupKey?: string | null
     onRemove: (url: string) => void
 }
 
@@ -41,14 +42,47 @@ const groupItemsByMarketplace = (items: SavedProduct[]) => {
     }, [])
 }
 
-export const SavedProductsList = ({ items, onRemove }: SavedProductsListProps) => {
+export const SavedProductsList = ({ items, autoExpandedGroupKey, onRemove }: SavedProductsListProps) => {
     const [collapsedGroupKeys, setCollapsedGroupKeys] = useState<Set<string>>(() => new Set())
+    const knownGroupKeysRef = useRef<Set<string>>(new Set())
+
+    const groups = useMemo(() => groupItemsByMarketplace(items), [items])
+    const groupKeys = useMemo(() => groups.map(group => getMarketplaceGroupKey(group)), [groups])
+
+    useEffect(() => {
+        if (groupKeys.length === 0) {
+            knownGroupKeysRef.current = new Set()
+            setCollapsedGroupKeys(new Set())
+            return
+        }
+
+        const knownGroupKeys = knownGroupKeysRef.current
+
+        setCollapsedGroupKeys(currentKeys => {
+            const nextKeys =
+                knownGroupKeys.size === 0
+                    ? new Set(groupKeys)
+                    : new Set(Array.from(currentKeys).filter(groupKey => groupKeys.includes(groupKey)))
+
+            groupKeys.forEach(groupKey => {
+                if (!knownGroupKeys.has(groupKey)) {
+                    nextKeys.add(groupKey)
+                }
+            })
+
+            if (autoExpandedGroupKey && groupKeys.includes(autoExpandedGroupKey)) {
+                nextKeys.delete(autoExpandedGroupKey)
+            }
+
+            return nextKeys
+        })
+
+        knownGroupKeysRef.current = new Set(groupKeys)
+    }, [autoExpandedGroupKey, groupKeys])
 
     if (items.length === 0) {
         return <EmptyState />
     }
-
-    const groups = groupItemsByMarketplace(items)
 
     const handleToggleGroup = (groupKey: string) => {
         setCollapsedGroupKeys(currentKeys => {
