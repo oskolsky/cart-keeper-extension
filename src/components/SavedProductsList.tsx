@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo } from 'react'
 
 import type { SavedProduct } from '../types'
 import { getMarketplaceGroupKey } from '../utils/marketplace'
@@ -8,7 +8,13 @@ import { SavedProductsListSection } from './SavedProductsListSection'
 
 type SavedProductsListProps = {
     items: SavedProduct[]
+    autoOpenGroupRequest: AutoOpenGroupRequest | null
     onRemove: (url: string) => void
+}
+
+export type AutoOpenGroupRequest = {
+    groupKey: string
+    id: number
 }
 
 type SavedProductsGroup = {
@@ -18,54 +24,36 @@ type SavedProductsGroup = {
 }
 
 const groupItemsByMarketplace = (items: SavedProduct[]) => {
-    return items.reduce<SavedProductsGroup[]>((groups, item) => {
-        const { marketplaceName, marketplaceUrl } = item
+    const groupsByKey = new Map<string, SavedProductsGroup>()
 
-        const group = groups.find(
-            currentGroup =>
-                currentGroup.marketplaceName === marketplaceName && currentGroup.marketplaceUrl === marketplaceUrl,
-        )
+    items.forEach(item => {
+        const groupKey = getMarketplaceGroupKey(item)
+        const group = groupsByKey.get(groupKey)
 
         if (group) {
             group.items.push(item)
-            return groups
+            return
         }
 
-        groups.push({
-            marketplaceName,
-            marketplaceUrl,
+        groupsByKey.set(groupKey, {
+            marketplaceName: item.marketplaceName,
+            marketplaceUrl: item.marketplaceUrl,
             items: [item],
         })
+    })
 
-        return groups
-    }, [])
+    return Array.from(groupsByKey.values())
 }
 
-export const SavedProductsList = ({ items, onRemove }: SavedProductsListProps) => {
-    const [collapsedGroupKeys, setCollapsedGroupKeys] = useState<Set<string>>(() => new Set())
+export const SavedProductsList = ({ items, autoOpenGroupRequest, onRemove }: SavedProductsListProps) => {
+    const groups = useMemo(() => groupItemsByMarketplace(items), [items])
 
     if (items.length === 0) {
         return <EmptyState />
     }
 
-    const groups = groupItemsByMarketplace(items)
-
-    const handleToggleGroup = (groupKey: string) => {
-        setCollapsedGroupKeys(currentKeys => {
-            const nextKeys = new Set(currentKeys)
-
-            if (nextKeys.has(groupKey)) {
-                nextKeys.delete(groupKey)
-            } else {
-                nextKeys.add(groupKey)
-            }
-
-            return nextKeys
-        })
-    }
-
     return (
-        <div className="min-h-0 flex-1 overflow-y-auto px-5">
+        <div className="px-5">
             {groups.map(group => {
                 const groupKey = getMarketplaceGroupKey(group)
 
@@ -74,8 +62,7 @@ export const SavedProductsList = ({ items, onRemove }: SavedProductsListProps) =
                         key={groupKey}
                         title={group.marketplaceName}
                         count={group.items.length}
-                        isExpanded={!collapsedGroupKeys.has(groupKey)}
-                        onToggle={() => handleToggleGroup(groupKey)}
+                        openRequestId={autoOpenGroupRequest?.groupKey === groupKey ? autoOpenGroupRequest.id : 0}
                     >
                         {group.items.map(item => (
                             <SavedProductItem key={item.url} item={item} onRemove={onRemove} />

@@ -11,3 +11,8 @@ export type Product = {
 export type SavedProduct = Product & {
     savedAt: string
 }
+
+export type MarketplaceAdapter = {
+    isProductPage: () => boolean
+    parseProduct: () => Product | null
+}

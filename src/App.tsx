@@ -3,9 +3,10 @@ import { useEffect, useState } from 'react'
 import { Footer } from './components/Footer'
 import { Header } from './components/Header'
 import { Loader } from './components/Loader'
-import { SavedProductsList } from './components/SavedProductsList'
+import { type AutoOpenGroupRequest, SavedProductsList } from './components/SavedProductsList'
 import type { Product, SavedProduct } from './types'
 import { getProductFromPage } from './utils/currentProduct'
+import { getMarketplaceGroupKey } from './utils/marketplace'
 import { isSameProductUrl } from './utils/productUrl'
 import { getSavedProducts, removeSavedProduct, saveProduct } from './utils/storage'
 
@@ -13,6 +14,7 @@ export default function App() {
     const [items, setItems] = useState<SavedProduct[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [currentProduct, setCurrentProduct] = useState<Product | null>(null)
+    const [autoOpenGroupRequest, setAutoOpenGroupRequest] = useState<AutoOpenGroupRequest | null>(null)
 
     const isCurrentProductSaved = currentProduct
         ? items.some(item => isSameProductUrl(item.url, currentProduct.url))
@@ -40,6 +42,10 @@ export default function App() {
 
         const updated = await saveProduct(currentProduct)
         setItems(updated)
+        setAutoOpenGroupRequest(currentRequest => ({
+            groupKey: getMarketplaceGroupKey(currentProduct),
+            id: (currentRequest?.id ?? 0) + 1,
+        }))
     }
 
     const handleRemoveProduct = async (url: string) => {
@@ -59,8 +65,12 @@ export default function App() {
             {isLoading ? (
                 <Loader />
             ) : (
-                <div className="flex min-h-60 flex-1 flex-col">
-                    <SavedProductsList items={items} onRemove={handleRemoveProduct} />
+                <div className="min-h-0 overflow-y-auto">
+                    <SavedProductsList
+                        items={items}
+                        autoOpenGroupRequest={autoOpenGroupRequest}
+                        onRemove={handleRemoveProduct}
+                    />
                 </div>
             )}
 

@@ -4,7 +4,7 @@ const PRIVACY_POLICY_URL = '/privacy-policy.html'
 
 export const Footer = () => {
     return (
-        <footer className="border-t border-gray-200 bg-white px-5 py-3 text-xs text-gray-400">
+        <footer className="border-t border-gray-300 bg-gray-100 px-5 py-3 text-xs text-gray-500">
             <div className="flex items-center justify-between gap-3">
                 <a
                     href={PRIVACY_POLICY_URL}

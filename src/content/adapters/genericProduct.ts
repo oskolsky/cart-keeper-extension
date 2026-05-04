@@ -1,11 +1,6 @@
-import type { Product } from '../../types'
+import type { MarketplaceAdapter, Product } from '../../types'
+import { getCanonicalUrl, getFirstParsedPrice, getMetaContent, parsePriceValue, toAbsoluteUrl } from './helpers'
 import { getPageMarketplaceName, getPageMarketplaceUrl } from './marketplace'
-import type { MarketplaceAdapter } from './types'
-
-type PriceResult = {
-    currency: string
-    value: number
-}
 
 type ProductCandidate = Product & {
     score: number
@@ -47,54 +42,6 @@ const IMAGE_SELECTORS = [
     'img[class*="listing-inline-image" i]',
     'img[id*="inlineimg" i]',
 ]
-
-const CURRENCY_BY_SYMBOL: Record<string, string> = {
-    $: '$',
-    '€': '€',
-    '£': '£',
-}
-
-const CURRENCY_CODES = ['EUR', 'USD', 'GBP']
-
-const parsePriceValue = (text: string) => {
-    const normalizedText = text.replace(/\s/g, '')
-    const lastDotIndex = normalizedText.lastIndexOf('.')
-    const lastCommaIndex = normalizedText.lastIndexOf(',')
-    const separatorIndex = Math.max(lastDotIndex, lastCommaIndex)
-
-    if (separatorIndex > -1 && normalizedText.length - separatorIndex - 1 === 3) {
-        const thousandsNormalizedPrice = normalizedText.replace(/[.,]/g, '')
-        const value = Number(thousandsNormalizedPrice)
-
-        return Number.isNaN(value) ? null : value
-    }
-
-    const decimalSeparator = lastDotIndex > lastCommaIndex ? '.' : ','
-    const normalizedPrice = normalizedText
-        .replace(new RegExp(`\\${decimalSeparator === '.' ? ',' : '.'}`, 'g'), '')
-        .replace(decimalSeparator, '.')
-    const value = Number(normalizedPrice)
-
-    return Number.isNaN(value) ? null : value
-}
-
-const getMetaContent = (selector: string) => {
-    return document.querySelector<HTMLMetaElement>(selector)?.content?.trim() ?? ''
-}
-
-const getCanonicalUrl = () => {
-    return document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.href?.trim() || window.location.href
-}
-
-const toAbsoluteUrl = (url: string) => {
-    if (!url) return ''
-
-    try {
-        return new URL(url, window.location.href).toString()
-    } catch {
-        return ''
-    }
-}
 
 const cleanProductName = (name: string) => {
     return name.replace(/^more information for\s+/i, '').trim()
@@ -169,25 +116,6 @@ const getProductImageUrl = () => {
     return toAbsoluteUrl(images[0] ? getImageSource(images[0].image) : '')
 }
 
-const parsePrice = (text: string): PriceResult | null => {
-    const normalizedText = text.replace(/\s+/g, ' ').trim()
-    const symbol = Object.keys(CURRENCY_BY_SYMBOL).find(currentSymbol => normalizedText.includes(currentSymbol))
-    const code = CURRENCY_CODES.find(currentCode => new RegExp(`\\b${currentCode}\\b`, 'i').test(normalizedText))
-    const priceMatch = normalizedText.match(
-        /(?:[$€£]\s*)?(\d{1,3}(?:[.,\s]\d{3})*(?:[.,]\d{2})|\d+(?:[.,]\d{2})?)(?:\s*(?:EUR|USD|GBP))?/i,
-    )
-
-    if (!priceMatch || (!symbol && !code)) return null
-
-    const value = parsePriceValue(priceMatch[1])
-    if (value === null) return null
-
-    return {
-        currency: symbol ? CURRENCY_BY_SYMBOL[symbol] : code || '',
-        value,
-    }
-}
-
 const getPriceFromMeta = () => {
     const priceText =
         getMetaContent('meta[property="product:price:amount"]') ||
@@ -209,16 +137,7 @@ const getPriceFromMeta = () => {
 }
 
 const getPriceFromDom = () => {
-    const priceElements = PRICE_SELECTORS.flatMap(selector =>
-        Array.from(document.querySelectorAll<HTMLElement>(selector)),
-    )
-
-    for (const element of priceElements.slice(0, 40)) {
-        const price = parsePrice(element.textContent ?? element.getAttribute('aria-label') ?? '')
-        if (price) return price
-    }
-
-    return null
+    return getFirstParsedPrice(PRICE_SELECTORS)
 }
 
 const hasBuyButton = () => {
