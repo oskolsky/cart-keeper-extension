@@ -27,8 +27,8 @@ export const SavedProductItem = ({ item, onRemove }: SavedProductItemProps) => {
                 <img src={item.imageUrl} alt={item.name} className="size-16" />
             </a>
 
-            <div className="flex flex-1 flex-col justify-between">
-                <div>
+            <div className="flex min-w-0 flex-1 flex-col justify-between">
+                <div className="min-w-0">
                     <a
                         href={productUrl}
                         target="_blank"
@@ -40,8 +40,8 @@ export const SavedProductItem = ({ item, onRemove }: SavedProductItemProps) => {
                     <div className="text-xs text-gray-400 uppercase">{formatSavedAt(item.savedAt)}</div>
                 </div>
 
-                <div className="flex items-center justify-between">
-                    <div className="text-sm">
+                <div className="flex min-w-0 items-center justify-between gap-3">
+                    <div className="min-w-0 truncate text-sm">
                         {item.currency} {item.price.toFixed(2)}
                     </div>
 
