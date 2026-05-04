@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { Footer } from './components/Footer'
 import { Header } from './components/Header'
 import { Loader } from './components/Loader'
-import { SavedProductsList } from './components/SavedProductsList'
+import { type AutoOpenGroupRequest, SavedProductsList } from './components/SavedProductsList'
 import type { Product, SavedProduct } from './types'
 import { getProductFromPage } from './utils/currentProduct'
 import { getMarketplaceGroupKey } from './utils/marketplace'
@@ -14,8 +14,7 @@ export default function App() {
     const [items, setItems] = useState<SavedProduct[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [currentProduct, setCurrentProduct] = useState<Product | null>(null)
-    const [autoExpandedGroupKey, setAutoExpandedGroupKey] = useState<string | null>(null)
-    const [autoExpandRequestId, setAutoExpandRequestId] = useState(0)
+    const [autoOpenGroupRequest, setAutoOpenGroupRequest] = useState<AutoOpenGroupRequest | null>(null)
 
     const isCurrentProductSaved = currentProduct
         ? items.some(item => isSameProductUrl(item.url, currentProduct.url))
@@ -43,8 +42,10 @@ export default function App() {
 
         const updated = await saveProduct(currentProduct)
         setItems(updated)
-        setAutoExpandedGroupKey(getMarketplaceGroupKey(currentProduct))
-        setAutoExpandRequestId(currentId => currentId + 1)
+        setAutoOpenGroupRequest(currentRequest => ({
+            groupKey: getMarketplaceGroupKey(currentProduct),
+            id: (currentRequest?.id ?? 0) + 1,
+        }))
     }
 
     const handleRemoveProduct = async (url: string) => {
@@ -64,11 +65,10 @@ export default function App() {
             {isLoading ? (
                 <Loader />
             ) : (
-                <div className="flex min-h-60 flex-1 flex-col">
+                <div className="min-h-0 overflow-y-auto">
                     <SavedProductsList
                         items={items}
-                        autoExpandedGroupKey={autoExpandedGroupKey}
-                        autoExpandRequestId={autoExpandRequestId}
+                        autoOpenGroupRequest={autoOpenGroupRequest}
                         onRemove={handleRemoveProduct}
                     />
                 </div>

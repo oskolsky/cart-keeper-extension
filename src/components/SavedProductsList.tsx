@@ -8,9 +8,13 @@ import { SavedProductsListSection } from './SavedProductsListSection'
 
 type SavedProductsListProps = {
     items: SavedProduct[]
-    autoExpandedGroupKey?: string | null
-    autoExpandRequestId: number
+    autoOpenGroupRequest: AutoOpenGroupRequest | null
     onRemove: (url: string) => void
+}
+
+export type AutoOpenGroupRequest = {
+    groupKey: string
+    id: number
 }
 
 type SavedProductsGroup = {
@@ -20,35 +24,28 @@ type SavedProductsGroup = {
 }
 
 const groupItemsByMarketplace = (items: SavedProduct[]) => {
-    return items.reduce<SavedProductsGroup[]>((groups, item) => {
-        const { marketplaceName, marketplaceUrl } = item
+    const groupsByKey = new Map<string, SavedProductsGroup>()
 
-        const group = groups.find(
-            currentGroup =>
-                currentGroup.marketplaceName === marketplaceName && currentGroup.marketplaceUrl === marketplaceUrl,
-        )
+    items.forEach(item => {
+        const groupKey = getMarketplaceGroupKey(item)
+        const group = groupsByKey.get(groupKey)
 
         if (group) {
             group.items.push(item)
-            return groups
+            return
         }
 
-        groups.push({
-            marketplaceName,
-            marketplaceUrl,
+        groupsByKey.set(groupKey, {
+            marketplaceName: item.marketplaceName,
+            marketplaceUrl: item.marketplaceUrl,
             items: [item],
         })
+    })
 
-        return groups
-    }, [])
+    return Array.from(groupsByKey.values())
 }
 
-export const SavedProductsList = ({
-    items,
-    autoExpandedGroupKey,
-    autoExpandRequestId,
-    onRemove,
-}: SavedProductsListProps) => {
+export const SavedProductsList = ({ items, autoOpenGroupRequest, onRemove }: SavedProductsListProps) => {
     const groups = useMemo(() => groupItemsByMarketplace(items), [items])
 
     if (items.length === 0) {
@@ -56,7 +53,7 @@ export const SavedProductsList = ({
     }
 
     return (
-        <div className="min-h-0 flex-1 overflow-y-auto px-5">
+        <div className="px-5">
             {groups.map(group => {
                 const groupKey = getMarketplaceGroupKey(group)
 
@@ -65,7 +62,7 @@ export const SavedProductsList = ({
                         key={groupKey}
                         title={group.marketplaceName}
                         count={group.items.length}
-                        autoExpandRequestId={autoExpandedGroupKey === groupKey ? autoExpandRequestId : 0}
+                        openRequestId={autoOpenGroupRequest?.groupKey === groupKey ? autoOpenGroupRequest.id : 0}
                     >
                         {group.items.map(item => (
                             <SavedProductItem key={item.url} item={item} onRemove={onRemove} />

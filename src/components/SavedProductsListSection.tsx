@@ -6,28 +6,23 @@ type SavedProductsListSectionProps = {
     children: ReactNode
     title: string
     count: number
-    autoExpandRequestId: number
+    openRequestId: number
 }
 
-export const SavedProductsListSection = ({
-    children,
-    title,
-    count,
-    autoExpandRequestId,
-}: SavedProductsListSectionProps) => {
-    const [isExpanded, setIsExpanded] = useState(false)
+export const SavedProductsListSection = ({ children, title, count, openRequestId }: SavedProductsListSectionProps) => {
+    const [isExpanded, setIsExpanded] = useState(openRequestId > 0)
 
     useEffect(() => {
-        if (autoExpandRequestId > 0) {
+        if (openRequestId > 0) {
             setIsExpanded(true)
         }
-    }, [autoExpandRequestId])
+    }, [openRequestId])
 
     return (
-        <section>
+        <>
             <button
                 type="button"
-                className="sticky top-0 z-10 flex w-full cursor-pointer items-center justify-between border-b border-gray-300 bg-white py-3 text-left text-gray-500 hover:text-gray-700"
+                className="sticky top-0 z-10 flex w-full cursor-pointer items-center justify-between border-b border-gray-300 bg-white py-3 text-left text-gray-500 last:border-b-0 hover:text-gray-700"
                 onClick={() => setIsExpanded(currentValue => !currentValue)}
             >
                 <div className="flex min-w-0 items-center gap-2 text-xs font-semibold tracking-wide uppercase">
@@ -41,6 +36,6 @@ export const SavedProductsListSection = ({
                 <span className="text-xs font-semibold">{count}</span>
             </button>
             {isExpanded && <div>{children}</div>}
-        </section>
+        </>
     )
 }
