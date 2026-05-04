@@ -15,6 +15,7 @@ export default function App() {
     const [isLoading, setIsLoading] = useState(true)
     const [currentProduct, setCurrentProduct] = useState<Product | null>(null)
     const [autoExpandedGroupKey, setAutoExpandedGroupKey] = useState<string | null>(null)
+    const [autoExpandRequestId, setAutoExpandRequestId] = useState(0)
 
     const isCurrentProductSaved = currentProduct
         ? items.some(item => isSameProductUrl(item.url, currentProduct.url))
@@ -43,6 +44,7 @@ export default function App() {
         const updated = await saveProduct(currentProduct)
         setItems(updated)
         setAutoExpandedGroupKey(getMarketplaceGroupKey(currentProduct))
+        setAutoExpandRequestId(currentId => currentId + 1)
     }
 
     const handleRemoveProduct = async (url: string) => {
@@ -66,6 +68,7 @@ export default function App() {
                     <SavedProductsList
                         items={items}
                         autoExpandedGroupKey={autoExpandedGroupKey}
+                        autoExpandRequestId={autoExpandRequestId}
                         onRemove={handleRemoveProduct}
                     />
                 </div>
